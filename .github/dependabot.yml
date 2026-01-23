@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 10
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+    assignees:
+      - "unleftie"
+    labels:
+      - "dependencies"
+      - "dependabot"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]

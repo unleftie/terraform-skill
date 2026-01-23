@@ -1,1 +1,9 @@
 .claude/settings.local.json
+
+# Local .vscode directories
+.vscode/
+**/.vscode/*
+*.code-workspace
+
+# Mac OS X stuff...
+.DS_Store

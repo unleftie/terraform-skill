@@ -10,61 +10,46 @@ Comprehensive Terraform and OpenTofu best practices skill for Claude Code. Get i
 ## What This Skill Provides
 
 🧪 **Testing Frameworks**
+
 - Decision matrix for choosing between native tests and Terratest
 - Testing strategy workflows (static → integration → E2E)
 - Real-world examples and patterns
 
 📦 **Module Development**
+
 - Structure and naming conventions
 - Versioning strategies
 - Public vs private module patterns
 
 🔄 **CI/CD Integration**
+
 - GitHub Actions workflows
 - GitLab CI examples
 - Cost optimization patterns
 - Compliance automation
 
 🔒 **Security & Compliance**
+
 - Trivy, Checkov integration
 - Policy-as-code patterns
 - Compliance scanning workflows
 
 📋 **Quick Reference**
+
 - Decision flowcharts
 - Common patterns (✅ DO vs ❌ DON'T)
 - Cheat sheets for rapid consultation
 
 ## Installation
 
-This plugin is distributed via Claude Code marketplace using `.claude-plugin/marketplace.json`.
-
-### Claude Code (Recommended)
-
 ```bash
-/plugin marketplace add antonbabenko/terraform-skill
-/plugin install terraform-skill@antonbabenko
-```
-
-### Manual Installation
-
-```bash
-# Clone to Claude skills directory
-git clone https://github.com/antonbabenko/terraform-skill ~/.claude/skills/terraform-skill
-```
-
-### Private Testing
-
-While the repository is private, you can test locally:
-
-```bash
-git clone git@github.com:antonbabenko/terraform-skill.git ~/.claude/skills/terraform-skill
-# Claude Code will load it from the local filesystem
+git clone https://github.com/unleftie/terraform-skill ~/.claude/skills/terraform-skill
 ```
 
 ### Verify Installation
 
 After installation, try:
+
 ```
 "Create a Terraform module with testing for an S3 bucket"
 ```
@@ -74,15 +59,19 @@ Claude will automatically use the skill when working with Terraform/OpenTofu cod
 ## Quick Start Examples
 
 **Create a module with tests:**
+
 > "Create a Terraform module for AWS VPC with native tests"
 
 **Review existing code:**
+
 > "Review this Terraform configuration following best practices"
 
 **Generate CI/CD workflow:**
+
 > "Create a GitHub Actions workflow for Terraform with cost estimation"
 
 **Testing strategy:**
+
 > "Help me choose between native tests and Terratest for my modules"
 
 ## What It Covers
@@ -90,6 +79,7 @@ Claude will automatically use the skill when working with Terraform/OpenTofu cod
 ### Testing Strategy Framework
 
 Decision matrices for:
+
 - When to use native tests (Terraform 1.6+)
 - When to use Terratest (Go-based)
 - Multi-environment testing patterns
@@ -123,6 +113,7 @@ Decision matrices for:
 ### Common Patterns & Anti-patterns
 
 Side-by-side ✅ DO vs ❌ DON'T examples for:
+
 - Variable naming
 - Resource naming
 - Module composition
@@ -132,12 +123,14 @@ Side-by-side ✅ DO vs ❌ DON'T examples for:
 ## Why This Skill?
 
 **Based on Production Experience:**
+
 - Patterns from [terraform-best-practices.com](https://terraform-best-practices.com)
 - Community-tested approaches from terraform-aws-modules
 - AWS Hero expertise in enterprise IaC
 - Real-world usage across 100+ modules
 
 **Version-Specific Guidance:**
+
 - Terraform 1.0+ features
 - OpenTofu 1.6+ compatibility
 - Native test framework (1.6+)
@@ -152,39 +145,30 @@ Not just "what to do" but "when and why" - helping you make informed architectur
 - **Terraform** 1.0+ or **OpenTofu** 1.6+
 - Optional: MCP Terraform server for enhanced registry integration
 
-## Contributing
-
-See [CLAUDE.md](CLAUDE.md) for:
-- Skill development guidelines
-- Content structure philosophy
-- How to propose improvements
-- Testing and validation approach
-
-**Issues & Feedback:**
-[GitHub Issues](https://github.com/antonbabenko/terraform-skill/issues)
-
 ## Releases
 
 Releases are automated based on conventional commits in commit messages:
 
-| Commit Type | Version Bump | Example |
-|-------------|--------------|---------|
-| `feat!:` or `BREAKING CHANGE:` | Major | 1.2.3 → 2.0.0 |
-| `feat:` | Minor | 1.2.3 → 1.3.0 |
-| `fix:` | Patch | 1.2.3 → 1.2.4 |
-| Other commits | Patch (default) | 1.2.3 → 1.2.4 |
+| Commit Type                    | Version Bump    | Example       |
+| ------------------------------ | --------------- | ------------- |
+| `feat!:` or `BREAKING CHANGE:` | Major           | 1.2.3 → 2.0.0 |
+| `feat:`                        | Minor           | 1.2.3 → 1.3.0 |
+| `fix:`                         | Patch           | 1.2.3 → 1.2.4 |
+| Other commits                  | Patch (default) | 1.2.3 → 1.2.4 |
 
 Releases are created automatically when changes are pushed to master.
 
 ## Related Resources
 
 ### Official Documentation
+
 - [Terraform Language](https://developer.hashicorp.com/terraform/docs) - HashiCorp official docs
 - [Terraform Testing](https://developer.hashicorp.com/terraform/language/tests) - Native test framework
 - [OpenTofu Documentation](https://opentofu.org/docs/) - OpenTofu official docs
 - [HashiCorp Best Practices](https://developer.hashicorp.com/terraform/cloud-docs/recommended-practices) - Cloud best practices
 
 ### Community Resources
+
 - [Awesome Terraform](https://github.com/shuaibiyy/awesome-tf)
 - [Terraform Best Practices](https://terraform-best-practices.com) - Comprehensive guide (base for this skill)
 - [terraform-aws-modules](https://github.com/terraform-aws-modules) - Production-grade AWS modules
@@ -193,6 +177,7 @@ Releases are created automatically when changes are pushed to master.
 - [AWS Terraform Best Practices](https://docs.aws.amazon.com/prescriptive-guidance/latest/terraform-aws-provider-best-practices/introduction.html)
 
 ### Development Tools
+
 - [pre-commit-terraform](https://github.com/antonbabenko/pre-commit-terraform) - Pre-commit hooks for Terraform
 - [terraform-docs](https://terraform-docs.io/) - Generate documentation from Terraform modules
 - [terraform-switcher](https://github.com/warrensbox/terraform-switcher) - Terraform version manager
@@ -203,7 +188,6 @@ Releases are created automatically when changes are pushed to master.
 
 **License:** Apache 2.0 - see [LICENSE](LICENSE)
 
-If you create derivative works or skills based on this skill, please include:
 ```
 Based on terraform-skill by Anton Babenko
 https://github.com/antonbabenko/terraform-skill
