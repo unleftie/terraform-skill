@@ -2,9 +2,6 @@
 name: terraform-skill
 description: Use when working with Terraform or OpenTofu - creating modules, writing tests (native test framework, Terratest), setting up CI/CD pipelines, reviewing configurations, choosing between testing approaches, debugging state issues, implementing security scanning (trivy, checkov), or making infrastructure-as-code architecture decisions
 license: Apache-2.0
-metadata:
-  author: Anton Babenko
-  version: 1.5.0
 ---
 
 # Terraform Skill for Claude
@@ -384,11 +381,6 @@ my-module/
 3. **Implement auto-cleanup** (prevent orphaned resources)
 4. **Tag all test resources** (track spending)
 
-**For complete CI/CD templates, see:**
-
-- **[CI/CD Workflows Guide](references/ci-cd-workflows.md)** - GitHub Actions, GitLab CI, Atlantis integration, cost optimization
-- **[Quick Reference](references/quick-reference.md#troubleshooting-guide)** - Common CI/CD issues and solutions
-
 ## Security & Compliance
 
 ### Essential Security Checks
@@ -520,7 +512,7 @@ variable "backup_days" {
 
 ### Terraform vs OpenTofu
 
-Both are fully supported by this skill. For licensing, governance, and feature comparison, see [Quick Reference: Terraform vs OpenTofu](references/quick-reference.md#terraform-vs-opentofu-comparison).
+Both are fully supported by this skill.
 
 ## Detailed Guides
 
@@ -530,7 +522,6 @@ This skill uses **progressive disclosure** - essential information is in this ma
 
 - **[Testing Frameworks](references/testing-frameworks.md)** - In-depth guide to static analysis, native tests, and Terratest
 - **[Module Patterns](references/module-patterns.md)** - Module structure, variable/output best practices, ✅ DO vs ❌ DON'T patterns
-- **[CI/CD Workflows](references/ci-cd-workflows.md)** - GitHub Actions, GitLab CI templates, cost optimization, automated cleanup
 - **[Security & Compliance](references/security-compliance.md)** - Trivy/Checkov integration, secrets management, compliance testing
 - **[Quick Reference](references/quick-reference.md)** - Command cheat sheets, decision flowcharts, troubleshooting guide
 
