@@ -62,7 +62,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: "1.21"
 
       - name: Run Terratest
         run: |
@@ -109,28 +109,28 @@ jobs:
 ### With Cost Estimation (Infracost)
 
 ```yaml
-  cost-estimate:
-    needs: plan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+cost-estimate:
+  needs: plan
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v3
 
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v2
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+    - name: Setup Infracost
+      uses: infracost/actions/setup@v2
+      with:
+        api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Generate Cost Estimate
-        run: |
-          infracost breakdown --path . \
-            --format json \
-            --out-file /tmp/infracost.json
+    - name: Generate Cost Estimate
+      run: |
+        infracost breakdown --path . \
+          --format json \
+          --out-file /tmp/infracost.json
 
-      - name: Post Cost Comment
-        uses: infracost/actions/comment@v1
-        with:
-          path: /tmp/infracost.json
-          behavior: update
+    - name: Post Cost Comment
+      uses: infracost/actions/comment@v1
+      with:
+        path: /tmp/infracost.json
+        behavior: update
 ```
 
 ---
@@ -277,8 +277,8 @@ name: Cleanup Test Resources
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # Every 2 hours
-  workflow_dispatch:        # Manual trigger
+    - cron: "0 */2 * * *" # Every 2 hours
+  workflow_dispatch: # Manual trigger
 
 jobs:
   cleanup:
@@ -306,9 +306,9 @@ jobs:
 ```yaml
 # Different workflows for different environments
 .github/workflows/
-  terraform-dev.yml
-  terraform-staging.yml
-  terraform-prod.yml
+terraform-dev.yml
+terraform-staging.yml
+terraform-prod.yml
 ```
 
 Or use reusable workflows:
@@ -384,8 +384,8 @@ security-scan:
     - name: Run Trivy
       uses: aquasecurity/trivy-action@master
       with:
-        scan-type: 'config'
-        scan-ref: '.'
+        scan-type: "config"
+        scan-ref: "."
 
     - name: Run Checkov
       uses: bridgecrewio/checkov-action@master

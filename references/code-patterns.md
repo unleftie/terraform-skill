@@ -174,6 +174,7 @@ output "subnet_id" {  # Should be plural "subnet_ids"
 ### When to use count
 
 ✓ **Simple numeric replication:**
+
 ```hcl
 resource "aws_subnet" "public" {
   count = 3
@@ -183,6 +184,7 @@ resource "aws_subnet" "public" {
 ```
 
 ✓ **Boolean conditions (create or don't):**
+
 ```hcl
 # ✅ GOOD - Boolean condition
 resource "aws_nat_gateway" "this" {
@@ -200,6 +202,7 @@ resource "aws_nat_gateway" "this" {
 ### When to use for_each
 
 ✓ **Reference resources by key:**
+
 ```hcl
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
@@ -213,6 +216,7 @@ resource "aws_subnet" "private" {
 ```
 
 ✓ **Items may be added/removed from middle:**
+
 ```hcl
 # ❌ BAD with count - removing middle item recreates all subsequent resources
 resource "aws_subnet" "private" {
@@ -232,6 +236,7 @@ resource "aws_subnet" "private" {
 ```
 
 ✓ **Creating multiple named resources:**
+
 ```hcl
 variable "environments" {
   default = {
@@ -326,6 +331,7 @@ moved {
 ```
 
 **Benefits after migration:**
+
 - Removing "us-east-1b" only destroys that subnet (not c)
 - Adding new AZ doesn't affect existing subnets
 - Resources have stable addresses by AZ name
@@ -552,6 +558,7 @@ version = ">= 5.0"  # Any version 5.0 or higher (risky - breaking changes)
 ### Versioning Strategy by Component
 
 **Terraform itself:**
+
 ```hcl
 # versions.tf
 terraform {
@@ -561,6 +568,7 @@ terraform {
 ```
 
 **Providers:**
+
 ```hcl
 # versions.tf
 terraform {
@@ -578,6 +586,7 @@ terraform {
 ```
 
 **Modules:**
+
 ```hcl
 # Production - pin exact version
 module "vpc" {
@@ -595,16 +604,19 @@ module "vpc" {
 ### Update Strategy
 
 **Security patches:**
+
 - Update immediately
 - Test in dev → stage → prod
 - Prioritize provider and Terraform core updates
 
 **Minor versions:**
+
 - Regular maintenance windows (monthly/quarterly)
 - Review changelog for breaking changes
 - Test thoroughly before production
 
 **Major versions:**
+
 - Planned upgrade cycles
 - Dedicated testing period
 - May require code changes
@@ -845,11 +857,13 @@ resource "aws_subnet" "public" {
 ```
 
 **Why this matters:**
+
 - Prevents deletion errors when destroying infrastructure
 - Ensures correct dependency order without explicit `depends_on`
 - Particularly useful for complex VPC configurations with secondary CIDR blocks
 
 **Common use cases:**
+
 - VPC with secondary CIDR blocks
 - Resources that depend on optional configurations
 - Complex deletion order requirements

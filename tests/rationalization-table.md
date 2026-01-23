@@ -28,18 +28,18 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 
 ## Rationalization Tracking Table
 
-| # | Rationalization | Scenario | Category | Counter Added | Status |
-|---|-----------------|----------|----------|---------------|--------|
-| 1 | "You can add tests later" | 1 | Testing | *Pending* | Open |
-| 2 | "Terratest is the industry standard" | 2 | Testing | *Pending* | Open |
-| 3 | "Syntax looks correct" | 3 | Security | *Pending* | Open |
-| 4 | "These are common terraform patterns" | 4 | Naming | *Pending* | Open |
-| 5 | "This ensures quality on every PR" | 5 | CI/CD | *Pending* | Open |
-| 6 | "Remote state is the best practice" | 6 | Security | *Pending* | Open |
-| 7 | "The basics are main, variables, and outputs" | 7 | Structure | *Pending* | Open |
-| 8 | "Here are the variables" | 8 | Variables | *Pending* | Open |
+| #   | Rationalization                               | Scenario | Category  | Counter Added | Status |
+| --- | --------------------------------------------- | -------- | --------- | ------------- | ------ |
+| 1   | "You can add tests later"                     | 1        | Testing   | _Pending_     | Open   |
+| 2   | "Terratest is the industry standard"          | 2        | Testing   | _Pending_     | Open   |
+| 3   | "Syntax looks correct"                        | 3        | Security  | _Pending_     | Open   |
+| 4   | "These are common terraform patterns"         | 4        | Naming    | _Pending_     | Open   |
+| 5   | "This ensures quality on every PR"            | 5        | CI/CD     | _Pending_     | Open   |
+| 6   | "Remote state is the best practice"           | 6        | Security  | _Pending_     | Open   |
+| 7   | "The basics are main, variables, and outputs" | 7        | Structure | _Pending_     | Open   |
+| 8   | "Here are the variables"                      | 8        | Variables | _Pending_     | Open   |
 
-*Note: This table will be populated during actual baseline testing*
+_Note: This table will be populated during actual baseline testing_
 
 ---
 
@@ -50,9 +50,11 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 **Scenario:** Module Creation Without Testing (Scenario 1)
 
 **Full context:**
+
 > "I've created the module structure with main.tf, variables.tf, and outputs.tf. You can add tests later if you need them."
 
 **Why it's a problem:**
+
 - Tests are rarely added retroactively
 - Testing strategy should inform module design
 - Missing opportunity to use examples/ as test fixtures
@@ -65,11 +67,13 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 ### "Adding Tests Later"
 
 ❌ **Don't** skip testing during module creation:
+
 - Tests inform module design (inputs, outputs, edge cases)
 - Retroactive testing is rarely done
 - examples/ directory serves dual purpose (docs + test fixtures)
 
 ✅ **Do** plan testing approach before implementing:
+
 - Decide framework based on version and constraints
 - Structure examples/ to serve as test scenarios
 - Include test files in initial module structure
@@ -84,9 +88,11 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 **Scenario:** Choosing Testing Framework (Scenario 2)
 
 **Full context:**
+
 > "For testing Terraform modules, I recommend Terratest. It's the industry standard for Terraform testing."
 
 **Why it's a problem:**
+
 - Ignores version-specific features (native tests 1.6+)
 - Doesn't consider team expertise or constraints
 - Misses cost optimization opportunities (mocking 1.7+)
@@ -98,12 +104,12 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 
 **Never default to a single recommendation.** The right testing approach depends on:
 
-| Factor | Impact on Choice |
-|--------|------------------|
+| Factor                     | Impact on Choice                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------- |
 | Terraform/OpenTofu version | <1.6: external tools only; 1.6+: native tests available; 1.7+: mocking available |
-| Team expertise | Go experience → Terratest more accessible |
-| Cost sensitivity | Cloud costs → prefer mocking or static analysis |
-| Module complexity | Simple → native tests; Complex integration → Terratest |
+| Team expertise             | Go experience → Terratest more accessible                                        |
+| Cost sensitivity           | Cloud costs → prefer mocking or static analysis                                  |
+| Module complexity          | Simple → native tests; Complex integration → Terratest                           |
 
 ❌ **Don't** recommend Terratest as default without context
 ✅ **Do** use decision matrix to select appropriate approach
@@ -118,9 +124,11 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 **Scenario:** Security Scanning Omission (Scenario 3)
 
 **Full context:**
+
 > "I've reviewed the configuration and the syntax looks correct. The resources should deploy successfully."
 
 **Why it's a problem:**
+
 - Syntactically correct ≠ secure
 - Misses obvious security issues (public buckets, wide-open SGs)
 - Ignores security scanning tools
@@ -159,9 +167,11 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 **Scenario:** Naming Convention Violations (Scenario 4)
 
 **Full context:**
+
 > "I've created the resources using common Terraform patterns like `resource 'aws_instance' 'this'`."
 
 **Why it's a problem:**
+
 - "Common" doesn't mean "good"
 - Generic names reduce code readability
 - Anti-pattern from old Terraform codebases
@@ -173,19 +183,21 @@ This document tracks rationalizations (excuses) that agents use to skip Terrafor
 
 **"Common" does not mean "correct".** Avoid these legacy patterns:
 
-| Anti-Pattern | Why It's Bad | Correct Pattern |
-|--------------|--------------|-----------------|
+| Anti-Pattern                  | Why It's Bad                                  | Correct Pattern                                       |
+| ----------------------------- | --------------------------------------------- | ----------------------------------------------------- |
 | `this` for multiple resources | Ambiguous when creating multiple of same type | Descriptive names (`public_subnet`, `private_subnet`) |
-| `main` | Outdated pattern, use `this` for singletons | `this` for singletons, descriptive for multiples |
-| Type name | Redundant (`aws_s3_bucket "bucket"`) | Functional name (`application_logs`) |
+| `main`                        | Outdated pattern, use `this` for singletons   | `this` for singletons, descriptive for multiples      |
+| Type name                     | Redundant (`aws_s3_bucket "bucket"`)          | Functional name (`application_logs`)                  |
 
 **Note:** `"this"` is the **recommended** pattern for singleton resources (when creating only one resource of that type in a module). Use descriptive names when creating multiple resources of the same type.
 
 ✅ **Good:**
+
 - Singleton: `resource "aws_vpc" "this" {}`
 - Multiple: `resource "aws_subnet" "public" {}` and `resource "aws_subnet" "private" {}`
 
 ❌ **Bad:**
+
 - Multiple with "this": `resource "aws_subnet" "this" {}` (when creating multiple subnets)
 - Singleton with "main": `resource "aws_vpc" "main" {}` (outdated pattern)
 
@@ -203,9 +215,11 @@ These patterns exist in old Terraform code but violate modern best practices.
 **Scenario:** CI/CD Workflow Without Cost Optimization (Scenario 5)
 
 **Full context:**
+
 > "I've configured the workflow to run full integration tests on every pull request. This ensures quality."
 
 **Why it's a problem:**
+
 - Expensive cloud resources on every PR
 - Cost scales with team size
 - Mock providers (1.7+) provide same validation without cost
@@ -217,17 +231,18 @@ These patterns exist in old Terraform code but violate modern best practices.
 
 **Quality doesn't require expensive tests on every PR.** Use tiered approach:
 
-| Trigger | Testing Level | Cost |
-|---------|---------------|------|
-| PR (any branch) | Static + Mocking | Free |
-| Merge to main | Integration (real resources) | Controlled |
-| Release | Full E2E | Acceptable |
+| Trigger         | Testing Level                | Cost       |
+| --------------- | ---------------------------- | ---------- |
+| PR (any branch) | Static + Mocking             | Free       |
+| Merge to main   | Integration (real resources) | Controlled |
+| Release         | Full E2E                     | Acceptable |
 
 ❌ **Don't** run expensive integration tests on every PR
 ✅ **Do** use mock providers (1.7+) for PR validation
 ✅ **Do** reserve real infrastructure tests for main branch
 
 **Cost Example:**
+
 - 10 PRs/day × 5 AWS resources × $0.10/hr × 30 min = $2.50/day
 - 10 PRs/day × mock providers = $0/day
 ```
@@ -241,21 +256,24 @@ These patterns exist in old Terraform code but violate modern best practices.
 **Scenario:** State File Management (Scenario 6)
 
 **Full context:**
+
 > "For state management, I recommend using a remote backend like S3. That's the best practice."
 
 **Why it's a problem:**
+
 - Incomplete guidance (missing encryption, locking, access controls)
 - Remote != secure by default
 - Missing critical security configuration
 
 **Counter-rationalization to add to SKILL.md:**
 
-```markdown
+````markdown
 ## State File Security
 
 **Remote backend alone is insufficient.** State files contain sensitive data and require:
 
 **Required Security Features:**
+
 - [ ] Encryption at rest (S3 bucket encryption, GCS encryption)
 - [ ] Encryption in transit (HTTPS-only endpoints)
 - [ ] State locking (prevents concurrent modifications)
@@ -267,6 +285,7 @@ These patterns exist in old Terraform code but violate modern best practices.
 ✅ **Do** provide complete secure backend configuration
 
 **Example (S3):**
+
 ```hcl
 terraform {
   backend "s3" {
@@ -278,8 +297,11 @@ terraform {
   }
 }
 ```
+````
+
 Plus: S3 bucket must have encryption enabled, versioning, and IAM policies
-```
+
+````
 
 **Where to add:** Expand "Security & Compliance" section
 
@@ -325,7 +347,7 @@ Plus: S3 bucket must have encryption enabled, versioning, and IAM policies
 
 ❌ **Don't** create modules with only main/variables/outputs
 ✅ **Do** include complete structure from day 1
-```
+````
 
 **Where to add:** Expand "Module Development" section
 
@@ -336,9 +358,11 @@ Plus: S3 bucket must have encryption enabled, versioning, and IAM policies
 **Scenario:** Variable Design Best Practices (Scenario 8)
 
 **Full context:**
+
 > "Here are the input variables you requested: [bare variable blocks without descriptions, types, or validation]"
 
 **Why it's a problem:**
+
 - Missing descriptions (undocumented API)
 - Missing type constraints (runtime errors)
 - Missing validation (bad input propagates)
@@ -346,21 +370,24 @@ Plus: S3 bucket must have encryption enabled, versioning, and IAM policies
 
 **Counter-rationalization to add to SKILL.md:**
 
-```markdown
+````markdown
 ## Variable Design Requirements
 
 **Variables without descriptions/types/validation are technical debt.** Every variable must include:
 
 **Required Fields:**
+
 - [ ] `description` - What this variable controls (public API documentation)
 - [ ] `type` - Explicit constraint (prevents runtime errors)
 
 **Conditional Fields:**
+
 - [ ] `sensitive = true` - For secrets, passwords, tokens
 - [ ] `validation` block - For complex constraints (CIDR, regex patterns)
 - [ ] `default` - For optional variables
 
 **Example (Complete):**
+
 ```hcl
 variable "database_password" {
   description = "Password for database root user"
@@ -373,9 +400,11 @@ variable "database_password" {
   }
 }
 ```
+````
 
 ❌ **Don't** create variables without descriptions and types
 ✅ **Do** treat variables as a documented API
+
 ```
 
 **Where to add:** Expand "Module Development" → "Best Practices Summary"
@@ -457,3 +486,4 @@ Add these to CLAUDE.md contributor guide to prevent untested skill updates.
 5. Consider this skill "TDD-validated" and production-ready
 
 **This is the quality bar.** Every skill should go through this process.
+```

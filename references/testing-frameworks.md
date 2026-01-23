@@ -125,21 +125,23 @@ mcp__terraform__get_provider_details({
 ```
 
 **Why This Matters:**
+
 - Some blocks are **sets** (unordered, no indexing with `[0]`)
 - Some blocks are **lists** (ordered, indexable)
 - Some attributes are **computed** (only known after apply)
 
 **Common Schema Patterns:**
 
-| AWS Resource | Block Type | Indexing |
-|--------------|------------|----------|
-| `rule` in `aws_s3_bucket_server_side_encryption_configuration` | **set** | ❌ Cannot use `[0]` |
-| `transition` in `aws_s3_bucket_lifecycle_configuration` | **set** | ❌ Cannot use `[0]` |
-| `noncurrent_version_expiration` in lifecycle | **list** | ✅ Can use `[0]` |
+| AWS Resource                                                   | Block Type | Indexing            |
+| -------------------------------------------------------------- | ---------- | ------------------- |
+| `rule` in `aws_s3_bucket_server_side_encryption_configuration` | **set**    | ❌ Cannot use `[0]` |
+| `transition` in `aws_s3_bucket_lifecycle_configuration`        | **set**    | ❌ Cannot use `[0]` |
+| `noncurrent_version_expiration` in lifecycle                   | **list**   | ✅ Can use `[0]`    |
 
 ### Working with Set-Type Blocks
 
 **Problem:** Cannot index sets with `[0]`
+
 ```hcl
 # ❌ WRONG: This will fail
 condition = aws_s3_bucket_server_side_encryption_configuration.this.rule[0].bucket_key_enabled == true
@@ -147,6 +149,7 @@ condition = aws_s3_bucket_server_side_encryption_configuration.this.rule[0].buck
 ```
 
 **Solution 1:** Use `command = apply` to materialize the set
+
 ```hcl
 run "test_encryption" {
   command = apply  # Creates real/mocked resources
@@ -161,6 +164,7 @@ run "test_encryption" {
 ```
 
 **Solution 2:** Check at resource level (avoid accessing nested blocks)
+
 ```hcl
 run "test_encryption_exists" {
   command = plan
@@ -174,6 +178,7 @@ run "test_encryption_exists" {
 ```
 
 **Solution 3:** Use for expressions (works in apply mode)
+
 ```hcl
 run "test_encryption_algorithm" {
   command = apply
@@ -198,12 +203,14 @@ run "test_encryption_algorithm" {
 #### Use `command = plan`
 
 **When:**
+
 - Checking input validation
 - Verifying resource will be created
 - Testing variable defaults
 - Checking resource attributes that are **input-derived** (not computed)
 
 **Example:**
+
 ```hcl
 run "test_input_validation" {
   command = plan  # Fast, no resource creation
@@ -223,12 +230,14 @@ run "test_input_validation" {
 #### Use `command = apply`
 
 **When:**
+
 - Checking computed attributes (IDs, ARNs, generated names)
 - Accessing set-type blocks
 - Verifying actual resource behavior
 - Testing with real/mocked provider responses
 
 **Example:**
+
 ```hcl
 run "test_computed_values" {
   command = apply  # Executes and gets computed values
@@ -248,6 +257,7 @@ run "test_computed_values" {
 #### Common Pitfall: Checking Computed Values in Plan Mode
 
 **Problem:**
+
 ```hcl
 run "test_bucket_prefix" {
   command = plan  # ❌ WRONG MODE
@@ -266,6 +276,7 @@ run "test_bucket_prefix" {
 ```
 
 **Solution:**
+
 ```hcl
 run "test_bucket_prefix" {
   command = apply  # ✅ CORRECT MODE or check differently
@@ -283,6 +294,7 @@ run "test_bucket_prefix" {
 ```
 
 **Quick Decision Guide:**
+
 ```
 Checking input values? → command = plan
 Checking computed values? → command = apply

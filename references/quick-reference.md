@@ -151,29 +151,32 @@ Both Terraform and OpenTofu are fully supported by this skill. The choice depend
 
 **Quick Decision Matrix:**
 
-| Factor | Terraform | OpenTofu |
-|--------|-----------|----------|
-| **Licensing** | Business Source License (BSL) 1.1 | Mozilla Public License 2.0 (MPL 2.0) |
-| **Governance** | HashiCorp (single vendor) | Linux Foundation (community-driven) |
-| **Latest Version** | 1.14+ | 1.11+ |
-| **Native Testing** | 1.6+ | 1.6+ |
-| **Mock Providers** | 1.7+ | 1.7+ |
-| **Feature Parity** | Reference implementation | Compatible fork with some additions |
-| **Enterprise Support** | HCP Terraform, Terraform Cloud | Multiple vendors |
-| **Migration Path** | N/A | Drop-in replacement for Terraform ≤1.5 |
+| Factor                 | Terraform                         | OpenTofu                               |
+| ---------------------- | --------------------------------- | -------------------------------------- |
+| **Licensing**          | Business Source License (BSL) 1.1 | Mozilla Public License 2.0 (MPL 2.0)   |
+| **Governance**         | HashiCorp (single vendor)         | Linux Foundation (community-driven)    |
+| **Latest Version**     | 1.14+                             | 1.11+                                  |
+| **Native Testing**     | 1.6+                              | 1.6+                                   |
+| **Mock Providers**     | 1.7+                              | 1.7+                                   |
+| **Feature Parity**     | Reference implementation          | Compatible fork with some additions    |
+| **Enterprise Support** | HCP Terraform, Terraform Cloud    | Multiple vendors                       |
+| **Migration Path**     | N/A                               | Drop-in replacement for Terraform ≤1.5 |
 
 **When to choose Terraform:**
+
 - Using HashiCorp Terraform Cloud or HCP Terraform
 - Enterprise support contract with HashiCorp
 - Need absolute latest features first
 
 **When to choose OpenTofu:**
+
 - Prefer open-source governance model
 - Want to avoid vendor lock-in concerns
 - Building on community-driven development
 - BSL 1.1 license doesn't fit your use case
 
 **For this skill:**
+
 - Commands are shown for both: `terraform` and `tofu`
 - Most patterns work identically, though differences exist (see release notes)
 - Version-specific features noted (1.6+, 1.7+, etc.)
@@ -188,10 +191,12 @@ Both Terraform and OpenTofu are fully supported by this skill. The choice depend
 ### Issue: Tests fail in CI but pass locally
 
 **Symptoms:**
+
 - Tests pass on your machine
 - Same tests fail in GitHub Actions/GitLab CI
 
 **Common Causes:**
+
 1. Different Terraform/provider versions
 2. Different environment variables
 3. Different AWS credentials/permissions
@@ -215,6 +220,7 @@ terraform {
 ### Issue: Parallel tests conflict
 
 **Symptoms:**
+
 - Tests fail when run in parallel
 - Error: "ResourceAlreadyExistsException"
 
@@ -233,17 +239,20 @@ bucketName := fmt.Sprintf("test-bucket-%s", uniqueId)
 ### Issue: High test costs
 
 **Symptoms:**
+
 - AWS bill increasing from tests
 - Many orphaned resources in test account
 
 **Solutions:**
 
 1. **Use mocking for unit tests** (Terraform 1.7+)
+
    ```hcl
    mock_provider "aws" { ... }
    ```
 
 2. **Implement resource TTL tags**
+
    ```go
    Vars: map[string]interface{}{
        "tags": map[string]string{
@@ -254,11 +263,13 @@ bucketName := fmt.Sprintf("test-bucket-%s", uniqueId)
    ```
 
 3. **Run integration tests only on main branch**
+
    ```yaml
    if: github.ref == 'refs/heads/main'
    ```
 
 4. **Use smaller instance types**
+
    ```hcl
    instance_type = "t3.micro"  # Not "m5.large"
    ```
@@ -274,22 +285,26 @@ bucketName := fmt.Sprintf("test-bucket-%s", uniqueId)
 ### From Manual Testing → Automated
 
 **Phase 1:** Static analysis
+
 ```bash
 terraform validate
 terraform fmt -check
 ```
 
 **Phase 2:** Plan review
+
 ```bash
 terraform plan -out=tfplan
 # Manual review
 ```
 
 **Phase 3:** Automated tests
+
 - Native tests (1.6+)
 - OR Terratest
 
 **Phase 4:** CI/CD integration
+
 - GitHub Actions / GitLab CI
 - Automated apply on main branch
 
@@ -332,6 +347,7 @@ tests/
    - Compatible state files
 
 2. **Update CI/CD:**
+
    ```bash
    # Replace
    terraform init
@@ -417,22 +433,22 @@ Required documentation for all modules:
 
 ### Constraint Syntax
 
-| Syntax | Meaning | Use Case |
-|--------|---------|----------|
-| `"5.0.0"` | Exact version | Avoid (inflexible) |
-| `"~> 5.0"` | Pessimistic (5.0.x) | Recommended for stability |
-| `"~> 5.0.1"` | Pessimistic (5.0.x where x >= 1) | Specific patch minimum |
-| `">= 5.0, < 6.0"` | Range | Any 5.x version |
-| `">= 5.0"` | Minimum | Risky (breaking changes) |
+| Syntax            | Meaning                          | Use Case                  |
+| ----------------- | -------------------------------- | ------------------------- |
+| `"5.0.0"`         | Exact version                    | Avoid (inflexible)        |
+| `"~> 5.0"`        | Pessimistic (5.0.x)              | Recommended for stability |
+| `"~> 5.0.1"`      | Pessimistic (5.0.x where x >= 1) | Specific patch minimum    |
+| `">= 5.0, < 6.0"` | Range                            | Any 5.x version           |
+| `">= 5.0"`        | Minimum                          | Risky (breaking changes)  |
 
 ### Strategy by Component
 
-| Component | Recommendation | Example |
-|-----------|----------------|---------|
-| **Terraform** | Pin minor, allow patch | `required_version = "~> 1.9"` |
-| **Providers** | Pin major, allow minor/patch | `version = "~> 5.0"` |
-| **Modules (prod)** | Pin exact version | `version = "5.1.2"` |
-| **Modules (dev)** | Allow patch updates | `version = "~> 5.1"` |
+| Component          | Recommendation               | Example                       |
+| ------------------ | ---------------------------- | ----------------------------- |
+| **Terraform**      | Pin minor, allow patch       | `required_version = "~> 1.9"` |
+| **Providers**      | Pin major, allow minor/patch | `version = "~> 5.0"`          |
+| **Modules (prod)** | Pin exact version            | `version = "5.1.2"`           |
+| **Modules (dev)**  | Allow patch updates          | `version = "~> 5.1"`          |
 
 ### Update Workflow
 
@@ -454,16 +470,19 @@ git commit -m "Update provider versions"
 ### Update Strategy
 
 **Security patches:**
+
 - Update immediately
 - Test: dev → stage → prod
 - Prioritize Terraform core and provider updates
 
 **Minor versions:**
+
 - Regular maintenance (monthly/quarterly)
 - Review changelog for breaking changes
 - Test thoroughly before production
 
 **Major versions:**
+
 - Planned upgrade cycles
 - Dedicated testing period
 - May require code changes
@@ -537,18 +556,21 @@ What are you refactoring?
 ### Migration Best Practices
 
 **Before refactoring:**
+
 1. Backup state file
 2. Test in development first
 3. Review terraform plan carefully
 4. Document what changed and why
 
 **During refactoring:**
+
 1. One change at a time
 2. Verify each step with terraform plan
 3. Use moved blocks, not destroy/recreate
 4. Keep git history clean with logical commits
 
 **After refactoring:**
+
 1. Verify idempotency (plan shows no changes)
 2. Test in staging before production
 3. Update documentation

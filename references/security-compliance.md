@@ -368,11 +368,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
       "Principal": {
         "AWS": "arn:aws:iam::123456789012:role/TerraformRole"
       },
-      "Action": [
-        "s3:ListBucket",
-        "s3:GetObject",
-        "s3:PutObject"
-      ],
+      "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
       "Resource": [
         "arn:aws:s3:::my-terraform-state",
         "arn:aws:s3:::my-terraform-state/*"
