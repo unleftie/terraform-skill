@@ -21,13 +21,6 @@ Comprehensive Terraform and OpenTofu best practices skill for Claude Code. Get i
 - Versioning strategies
 - Public vs private module patterns
 
-🔄 **CI/CD Integration**
-
-- GitHub Actions workflows
-- GitLab CI examples
-- Cost optimization patterns
-- Compliance automation
-
 🔒 **Security & Compliance**
 
 - Trivy, Checkov integration
