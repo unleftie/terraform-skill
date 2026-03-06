@@ -379,8 +379,6 @@ module "rds" {
 ```
 my-module/
 ├── README.md                # Usage documentation
-├── LICENSE                  # MIT or Apache 2.0 (for public modules)
-├── .pre-commit-config.yaml  # Pre-commit hooks configuration
 ├── main.tf                  # Primary resources
 ├── variables.tf             # Input variables with descriptions
 ├── outputs.tf               # Output values
@@ -388,8 +386,6 @@ my-module/
 ├── examples/
 │   ├── simple/              # Minimal working example
 │   └── complete/            # Full-featured example
-└── tests/                   # Test files
-    └── module_test.tftest.hcl  # Or .go
 ```
 
 ### Why This Structure?
@@ -402,7 +398,6 @@ my-module/
 - **outputs.tf** - All outputs documented
 - **versions.tf** - Lock provider versions for stability
 - **examples/** - Serve as both documentation and test fixtures
-- **tests/** - Automated testing
 
 ### License Files
 
