@@ -685,51 +685,6 @@ terraform {
 
 ## Refactoring Patterns
 
-### Terraform Version Upgrades
-
-#### 0.12/0.13 → 1.x Migration Checklist
-
-**Replace legacy patterns with modern equivalents:**
-
-- [ ] Replace `element(concat(...))` with `try()`
-- [ ] Add `nullable = false` to variables that shouldn't accept null
-- [ ] Use `optional()` in object types for optional attributes
-- [ ] Add `validation` blocks to variables with constraints
-- [ ] Migrate secrets to write-only arguments (Terraform 1.11+)
-- [ ] Use `moved` blocks for resource refactoring (Terraform 1.1+)
-- [ ] Consider cross-variable validation (Terraform 1.9+)
-
-**Example migration:**
-
-```hcl
-# Before (0.12 style)
-output "security_group_id" {
-  value = element(concat(aws_security_group.this.*.id, [""]), 0)
-}
-
-variable "config" {
-  type = object({
-    name = string
-    size = number
-  })
-}
-
-# After (1.x style)
-output "security_group_id" {
-  description = "The ID of the security group"
-  value       = try(aws_security_group.this[0].id, "")
-}
-
-variable "config" {
-  description = "Configuration settings"
-  type = object({
-    name = string
-    size = optional(number, 100)  # Optional with default
-  })
-  nullable = false  # Don't accept null
-}
-```
-
 ### Secrets Remediation
 
 **Pattern:** Move secrets out of Terraform state into external secret management.

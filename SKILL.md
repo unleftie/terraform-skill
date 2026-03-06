@@ -119,66 +119,6 @@ var.database_instance_class # Not just "instance_class"
 - `versions.tf` - Provider versions
 - `data.tf` - Data sources (optional)
 
-## Testing Strategy Framework
-
-### Decision Matrix: Which Testing Approach?
-
-| Your Situation                   | Recommended Approach  | Tools                                    | Cost     |
-| -------------------------------- | --------------------- | ---------------------------------------- | -------- |
-| **Quick syntax check**           | Static analysis       | `terraform validate`, `fmt`              | Free     |
-| **Pre-commit validation**        | Static + lint         | `validate`, `tflint`, `trivy`, `checkov` | Free     |
-| **Terraform 1.6+, simple logic** | Native test framework | Built-in `terraform test`                | Free-Low |
-| **Pre-1.6, or Go expertise**     | Integration testing   | Terratest                                | Low-Med  |
-| **Security/compliance focus**    | Policy as code        | OPA, Sentinel                            | Free     |
-| **Cost-sensitive workflow**      | Mock providers (1.7+) | Native tests + mocking                   | Free     |
-| **Multi-cloud, complex**         | Full integration      | Terratest + real infra                   | Med-High |
-
-### Testing Pyramid for Infrastructure
-
-```
-        /\
-       /  \          End-to-End Tests (Expensive)
-      /____\         - Full environment deployment
-     /      \        - Production-like setup
-    /________\
-   /          \      Integration Tests (Moderate)
-  /____________\     - Module testing in isolation
- /              \    - Real resources in test account
-/________________\   Static Analysis (Cheap)
-                     - validate, fmt, lint
-                     - Security scanning
-```
-
-### Native Test Best Practices (1.6+)
-
-**Before generating test code:**
-
-1. **Validate schemas with Terraform MCP:**
-
-   ```
-   Search provider docs → Get resource schema → Identify block types
-   ```
-
-2. **Choose correct command mode:**
-   - `command = plan` - Fast, for input validation
-   - `command = apply` - Required for computed values and set-type blocks
-
-3. **Handle set-type blocks correctly:**
-   - Cannot index with `[0]`
-   - Use `for` expressions to iterate
-   - Or use `command = apply` to materialize
-
-**Common patterns:**
-
-- S3 encryption rules: **set** (use for expressions)
-- Lifecycle transitions: **set** (use for expressions)
-- IAM policy statements: **set** (use for expressions)
-
-**For detailed testing guides, see:**
-
-- **[Testing Frameworks Guide](references/testing-frameworks.md)** - Deep dive into static analysis, native tests, and Terratest
-- **[Quick Reference](references/quick-reference.md#testing-approach-selection)** - Decision flowchart and command cheat sheet
-
 ## Code Structure Standards
 
 ### Resource Block Ordering
@@ -339,8 +279,6 @@ my-module/
 ├── examples/
 │   ├── minimal/        # Minimal working example
 │   └── complete/       # Full-featured example
-└── tests/              # Test files
-    └── module_test.tftest.hcl  # Or .go
 ```
 
 ### Best Practices Summary

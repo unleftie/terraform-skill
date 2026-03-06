@@ -9,12 +9,6 @@ Comprehensive Terraform and OpenTofu best practices skill for Claude Code. Get i
 
 ## What This Skill Provides
 
-🧪 **Testing Frameworks**
-
-- Decision matrix for choosing between native tests and Terratest
-- Testing strategy workflows (static → integration → E2E)
-- Real-world examples and patterns
-
 📦 **Module Development**
 
 - Structure and naming conventions
@@ -26,12 +20,6 @@ Comprehensive Terraform and OpenTofu best practices skill for Claude Code. Get i
 - Trivy, Checkov integration
 - Policy-as-code patterns
 - Compliance scanning workflows
-
-📋 **Quick Reference**
-
-- Decision flowcharts
-- Common patterns (✅ DO vs ❌ DON'T)
-- Cheat sheets for rapid consultation
 
 ## Installation
 
@@ -69,14 +57,6 @@ Claude will automatically use the skill when working with Terraform/OpenTofu cod
 
 ## What It Covers
 
-### Testing Strategy Framework
-
-Decision matrices for:
-
-- When to use native tests (Terraform 1.6+)
-- When to use Terratest (Go-based)
-- Multi-environment testing patterns
-
 ### Module Development Patterns
 
 - Naming conventions (`terraform-<PROVIDER>-<NAME>`)
@@ -85,23 +65,6 @@ Decision matrices for:
 - Output value design
 - Version constraint patterns
 - Documentation standards
-
-### CI/CD Workflows
-
-- GitHub Actions examples
-- GitLab CI templates
-- Atlantis integration
-- Cost estimation (Infracost)
-- Security scanning (Trivy, Checkov)
-- Compliance checking
-
-### Security & Compliance
-
-- Static analysis integration
-- Policy-as-code patterns
-- Secrets management
-- State file security
-- Compliance scanning workflows
 
 ### Common Patterns & Anti-patterns
 
@@ -112,25 +75,6 @@ Side-by-side ✅ DO vs ❌ DON'T examples for:
 - Module composition
 - State management
 - Provider configuration
-
-## Why This Skill?
-
-**Based on Production Experience:**
-
-- Patterns from [terraform-best-practices.com](https://terraform-best-practices.com)
-- Community-tested approaches from terraform-aws-modules
-- AWS Hero expertise in enterprise IaC
-- Real-world usage across 100+ modules
-
-**Version-Specific Guidance:**
-
-- Terraform 1.0+ features
-- OpenTofu 1.6+ compatibility
-- Native test framework (1.6+)
-- Current tooling ecosystem (2024-2026)
-
-**Decision Frameworks:**
-Not just "what to do" but "when and why" - helping you make informed architecture decisions.
 
 ## Requirements
 
