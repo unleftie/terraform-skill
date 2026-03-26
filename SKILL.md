@@ -15,10 +15,7 @@ Comprehensive Terraform and OpenTofu guidance covering testing, modules, CI/CD, 
 - Creating new Terraform or OpenTofu configurations or modules
 - Setting up testing infrastructure for IaC code
 - Deciding between testing approaches (validate, plan, frameworks)
-- Structuring multi-environment deployments
-- Implementing CI/CD for infrastructure-as-code
 - Reviewing or refactoring existing Terraform/OpenTofu projects
-- Choosing between module patterns or state management approaches
 
 **Don't use this skill for:**
 
@@ -121,61 +118,6 @@ var.database_instance_class # Not just "instance_class"
 
 ## Code Structure Standards
 
-### Resource Block Ordering
-
-**Strict ordering for consistency:**
-
-1. `count` or `for_each` FIRST (blank line after)
-2. Other arguments
-3. `tags` as last real argument
-4. `depends_on` after tags (if needed)
-5. `lifecycle` at the very end (if needed)
-
-```hcl
-# ✅ GOOD - Correct ordering
-resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
-
-  allocation_id = aws_eip.this[0].id
-  subnet_id     = aws_subnet.public[0].id
-
-  tags = {
-    Name = "${var.name}-nat"
-  }
-
-  depends_on = [aws_internet_gateway.this]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-```
-
-### Variable Block Ordering
-
-1. `description` (ALWAYS required)
-2. `type`
-3. `default`
-4. `validation`
-5. `nullable` (when setting to false)
-
-```hcl
-variable "environment" {
-  description = "Environment name for resource tagging"
-  type        = string
-  default     = "test"
-
-  validation {
-    condition     = contains(["test", "stage", "prod"], var.environment)
-    error_message = "Environment must be one of: test, stage, prod."
-  }
-
-  nullable = false
-}
-```
-
-**For complete structure guidelines, see:** [Code Patterns: Block Ordering & Structure](references/code-patterns.md#block-ordering--structure)
-
 ## Count vs For_Each: When to Use Each
 
 ### Quick Decision Guide
@@ -267,20 +209,6 @@ resource "aws_subnet" "public" {
 
 ## Module Development
 
-### Standard Module Structure
-
-```
-my-module/
-├── README.md           # Usage documentation
-├── main.tf             # Primary resources
-├── variables.tf        # Input variables with descriptions
-├── outputs.tf          # Output values
-├── versions.tf         # Provider version constraints
-├── examples/
-│   ├── minimal/        # Minimal working example
-│   └── complete/       # Full-featured example
-```
-
 ### Best Practices Summary
 
 **Variables:**
@@ -301,53 +229,6 @@ my-module/
 **For detailed module patterns, see:**
 
 - **[Module Patterns Guide](references/module-patterns.md)** - Variable best practices, output design, ✅ DO vs ❌ DON'T patterns
-- **[Quick Reference](references/quick-reference.md#common-patterns)** - Resource naming, variable naming, file organization
-
-## CI/CD Integration
-
-### Recommended Workflow Stages
-
-1. **Validate** - Format check + syntax validation + linting
-2. **Test** - Run automated tests (native or Terratest)
-3. **Plan** - Generate and review execution plan
-4. **Apply** - Execute changes (with approvals for production)
-
-### Cost Optimization Strategy
-
-1. **Use mocking for PR validation** (free)
-2. **Run integration tests only on main branch** (controlled cost)
-3. **Implement auto-cleanup** (prevent orphaned resources)
-4. **Tag all test resources** (track spending)
-
-## Security & Compliance
-
-### Essential Security Checks
-
-```bash
-# Static security scanning
-trivy config .
-checkov -d .
-```
-
-### Common Issues to Avoid
-
-❌ **Don't:**
-
-- Store secrets in variables
-- Use default VPC
-- Skip encryption
-- Open security groups to 0.0.0.0/0
-
-✅ **Do:**
-
-- Use AWS Secrets Manager / Parameter Store
-- Create dedicated VPCs
-- Enable encryption at rest
-- Use least-privilege security groups
-
-**For detailed security guidance, see:**
-
-- **[Security & Compliance Guide](references/security-compliance.md)** - Trivy/Checkov integration, secrets management, state file security, compliance testing
 
 ## Version Management
 
@@ -361,27 +242,11 @@ version = ">= 5.0"     # Minimum (risky - breaking changes)
 
 ### Strategy by Component
 
-| Component          | Strategy            | Example                       |
-| ------------------ | ------------------- | ----------------------------- |
-| **Terraform**      | Pin minor version   | `required_version = "~> 1.9"` |
-| **Providers**      | Pin major version   | `version = "~> 5.0"`          |
-| **Modules (prod)** | Pin exact version   | `version = "5.1.2"`           |
-| **Modules (test)** | Allow patch updates | `version = "~> 5.1"`          |
-
-### Update Workflow
-
-```bash
-# Lock versions initially
-terraform init              # Creates .terraform.lock.hcl
-
-# Update to latest within constraints
-terraform init -upgrade     # Updates providers
-
-# Review and test
-terraform plan
-```
-
-**For detailed version management, see:** [Code Patterns: Version Management](references/code-patterns.md#version-management)
+| Component     | Strategy          | Example                       |
+| ------------- | ----------------- | ----------------------------- |
+| **Terraform** | Pin minor version | `required_version = "~> 1.9"` |
+| **Providers** | Pin major version | `version = "~> 5.0"`          |
+| **Modules**   | Pin exact version | `version = "5.1.2"`           |
 
 ## Modern Terraform Features (1.0+)
 
@@ -393,8 +258,6 @@ terraform plan
 | `nullable = false`         | 1.1+    | Prevent null values in variables             |
 | `moved` blocks             | 1.1+    | Refactor without destroy/recreate            |
 | `optional()` with defaults | 1.3+    | Optional object attributes                   |
-| Native testing             | 1.6+    | Built-in test framework                      |
-| Mock providers             | 1.7+    | Cost-free unit testing                       |
 | Provider functions         | 1.8+    | Provider-specific data transformation        |
 | Cross-variable validation  | 1.9+    | Validate relationships between variables     |
 | Write-only arguments       | 1.11+   | Secrets never stored in state                |
@@ -428,30 +291,6 @@ variable "backup_days" {
 
 **For complete patterns and examples, see:** [Code Patterns: Modern Terraform Features](references/code-patterns.md#modern-terraform-features-10)
 
-## Version-Specific Guidance
-
-### Terraform 1.0-1.5
-
-- Use Terratest for testing
-- No native testing framework available
-- Focus on static analysis and plan validation
-
-### Terraform 1.6+ / OpenTofu 1.6+
-
-- **New:** Native `terraform test` / `tofu test` command
-- Consider migrating from external frameworks for simple tests
-- Keep Terratest only for complex integration tests
-
-### Terraform 1.7+ / OpenTofu 1.7+
-
-- **New:** Mock providers for unit testing
-- Reduce cost by mocking external dependencies
-- Use real integration tests for final validation
-
-### Terraform vs OpenTofu
-
-Both are fully supported by this skill.
-
 ## Detailed Guides
 
 This skill uses **progressive disclosure** - essential information is in this main file, detailed guides are available when needed:
@@ -460,8 +299,7 @@ This skill uses **progressive disclosure** - essential information is in this ma
 
 - **[Testing Frameworks](references/testing-frameworks.md)** - In-depth guide to static analysis, native tests, and Terratest
 - **[Module Patterns](references/module-patterns.md)** - Module structure, variable/output best practices, ✅ DO vs ❌ DON'T patterns
-- **[Security & Compliance](references/security-compliance.md)** - Trivy/Checkov integration, secrets management, compliance testing
-- **[Quick Reference](references/quick-reference.md)** - Command cheat sheets, decision flowcharts, troubleshooting guide
+- **[Code Patterns](references/code-patterns.md)** - Count vs For_Each, modern features, refactoring patterns, locals for dependencies
 
 **How to use:** When you need detailed information on a topic, reference the appropriate guide. Claude will load it on demand to provide comprehensive guidance.
 

@@ -5,7 +5,7 @@
 [![OpenTofu](https://img.shields.io/badge/OpenTofu-1.6+-FFD814)](https://opentofu.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-Comprehensive Terraform and OpenTofu best practices skill for Claude Code. Get instant guidance on testing strategies, module patterns, CI/CD workflows, and production-ready infrastructure code.
+Comprehensive Terraform and OpenTofu best practices skill for Claude Code. Get instant guidance on module patterns, and production-ready infrastructure code.
 
 ## What This Skill Provides
 
@@ -39,21 +39,13 @@ Claude will automatically use the skill when working with Terraform/OpenTofu cod
 
 ## Quick Start Examples
 
-**Create a module with tests:**
+**Create a module:**
 
-> "Create a Terraform module for AWS VPC with native tests"
+> "Create a Terraform module for AWS VPC"
 
 **Review existing code:**
 
 > "Review this Terraform configuration following best practices"
-
-**Generate CI/CD workflow:**
-
-> "Create a GitHub Actions workflow for Terraform with cost estimation"
-
-**Testing strategy:**
-
-> "Help me choose between native tests and Terratest for my modules"
 
 ## What It Covers
 

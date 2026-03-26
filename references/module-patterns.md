@@ -202,14 +202,6 @@ variable "enable_monitoring" {
 }
 ```
 
-### Key Principles
-
-- ✅ **Always include `description`** - Helps users understand the variable
-- ✅ **Use explicit `type` constraints** - Catches errors early
-- ✅ **Provide sensible `default` values** - Where appropriate
-- ✅ **Add `validation` blocks** - For complex constraints
-- ✅ **Use `sensitive = true`** - For secrets (Terraform 0.14+)
-
 ### Variable Naming
 
 ```hcl

@@ -11,9 +11,8 @@ This document provides detailed code patterns, structure guidelines, and modern 
 
 1. [Count vs For_Each Deep Dive](#count-vs-for_each-deep-dive)
 2. [Modern Terraform Features (1.0+)](#modern-terraform-features-10)
-3. [Version Management](#version-management)
-4. [Refactoring Patterns](#refactoring-patterns)
-5. [Locals for Dependency Management](#locals-for-dependency-management)
+3. [Refactoring Patterns](#refactoring-patterns)
+4. [Locals for Dependency Management](#locals-for-dependency-management)
 
 ---
 
@@ -347,78 +346,6 @@ resource "aws_db_instance" "this" {
 # ❌ BAD - Variable secret stored in state
 resource "aws_db_instance" "this" {
   password = var.db_password  # Ends up in state file
-}
-```
-
----
-
-## Version Management
-
-### Version Constraint Syntax
-
-```hcl
-# Exact version (avoid unless necessary - inflexible)
-version = "5.0.0"
-
-# Pessimistic constraint (recommended for stability)
-# Allows patch updates only
-version = "~> 5.0"      # Allows 5.0.x (any x), but not 5.1.0
-version = "~> 5.0.1"    # Allows 5.0.x where x >= 1, but not 5.1.0
-
-# Range constraints
-version = ">= 5.0, < 6.0"     # Any 5.x version
-version = ">= 5.0.0, < 5.1.0" # Specific minor version range
-
-# Minimum version
-version = ">= 5.0"  # Any version 5.0 or higher (risky - breaking changes)
-
-# Latest (avoid in production - unpredictable)
-# No version specified = always use latest available
-```
-
-### Versioning Strategy by Component
-
-**Terraform itself:**
-
-```hcl
-# versions.tf
-terraform {
-  # Pin to minor version, allow patch updates
-  required_version = "~> 1.9"  # Allows 1.9.x
-}
-```
-
-**Providers:**
-
-```hcl
-# versions.tf
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"  # Pin major version, allow minor/patch updates
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
-  }
-}
-```
-
-**Modules:**
-
-```hcl
-# Production - pin exact version
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.1.2"  # Exact version for production stability
-}
-
-# Development - allow flexibility
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.1"  # Allow patch updates in test
 }
 ```
 
