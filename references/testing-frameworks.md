@@ -15,16 +15,14 @@ This document provides in-depth guidance on testing frameworks for Infrastructur
 
 ## Static Analysis
 
-**Always do this first.** Zero cost, catches 40%+ of issues before deployment.
-
 ### Pre-commit Hooks
 
 ```bash
-pre-commit install --config ~/.config/pre-commit/.pre-commit-config.yaml
+[[ ! -f .git/hooks/pre-commit ]] && pre-commit install --config ~/.config/pre-commit/.pre-commit-config.yaml
 pre-commit run --config ~/.config/pre-commit/.pre-commit-config.yaml -a
 ```
 
-### What Each Tool Checks
+### What pre-commit hooks checks
 
 - **`terraform fmt`** - Code formatting consistency
 - **`terraform validate`** - Syntax and internal consistency

@@ -9,163 +9,11 @@ This document provides detailed code patterns, structure guidelines, and modern 
 
 ## Table of Contents
 
-1. [Block Ordering & Structure](#block-ordering--structure)
-2. [Count vs For_Each Deep Dive](#count-vs-for_each-deep-dive)
-3. [Modern Terraform Features (1.0+)](#modern-terraform-features-10)
-4. [Version Management](#version-management)
-5. [Refactoring Patterns](#refactoring-patterns)
-6. [Locals for Dependency Management](#locals-for-dependency-management)
-
----
-
-## Block Ordering & Structure
-
-### Resource Block Structure
-
-**Strict argument ordering:**
-
-1. `count` or `for_each` FIRST (blank line after)
-2. Other arguments (alphabetical or logical grouping)
-3. `tags` as last real argument
-4. `depends_on` after tags (if needed)
-5. `lifecycle` at the very end (if needed)
-
-```hcl
-# ✅ GOOD - Correct ordering
-resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
-
-  allocation_id = aws_eip.this[0].id
-  subnet_id     = aws_subnet.public[0].id
-
-  tags = {
-    Name        = "${var.name}-nat"
-    Environment = var.environment
-  }
-
-  depends_on = [aws_internet_gateway.this]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-# ❌ BAD - Wrong ordering
-resource "aws_nat_gateway" "this" {
-  allocation_id = aws_eip.this[0].id
-
-  tags = { Name = "nat" }
-
-  count = var.create_nat_gateway ? 1 : 0  # Should be first
-
-  subnet_id = aws_subnet.public[0].id
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  depends_on = [aws_internet_gateway.this]  # Should be after tags
-}
-```
-
-### Variable Definition Structure
-
-**Variable block ordering:**
-
-1. `description` (ALWAYS required)
-2. `type`
-3. `default`
-4. `sensitive` (when setting to true)
-5. `nullable` (when setting to false)
-6. `validation`
-
-```hcl
-# ✅ GOOD - Correct ordering and structure
-variable "environment" {
-  description = "Environment name for resource tagging"
-  type        = string
-  default     = "dev"
-  nullable    = false
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be one of: dev, staging, prod."
-  }
-}
-```
-
-### Variable Type Preferences
-
-- Prefer **simple types** (`string`, `number`, `list()`, `map()`) over `object()` unless strict validation needed
-- Use `optional()` for optional object attributes (Terraform 1.3+)
-- Use `any` to disable validation at certain depths or support multiple types
-
-**Modern variable patterns (Terraform 1.3+):**
-
-```hcl
-# ✅ GOOD - Using optional() for object attributes
-variable "database_config" {
-  description = "Database configuration with optional parameters"
-  type = object({
-    name               = string
-    engine             = string
-    instance_class     = string
-    backup_retention   = optional(number, 7)      # Default: 7
-    monitoring_enabled = optional(bool, true)     # Default: true
-    tags               = optional(map(string), {}) # Default: {}
-  })
-}
-
-# Usage - only required fields needed
-database_config = {
-  name           = "mydb"
-  engine         = "mysql"
-  instance_class = "db.t3.micro"
-  # Optional fields use defaults
-}
-```
-
-**Complex type example:**
-
-```hcl
-# For lists/maps of same type
-variable "subnet_configs" {
-  description = "Map of subnet configurations"
-  type        = map(map(string))  # All values are maps of strings
-}
-
-# When types vary, use any
-variable "mixed_config" {
-  description = "Configuration with varying types"
-  type        = any
-}
-```
-
-### Output Structure
-
-**Pattern:** `{name}_{type}_{attribute}`
-
-```hcl
-# ✅ GOOD
-output "security_group_id" {  # "this_" should be omitted
-  description = "The ID of the security group"
-  value       = try(aws_security_group.this[0].id, "")
-}
-
-output "private_subnet_ids" {  # Plural for list
-  description = "List of private subnet IDs"
-  value       = aws_subnet.private[*].id
-}
-
-# ❌ BAD
-output "this_security_group_id" {  # Don't prefix with "this_"
-  value = aws_security_group.this[0].id
-}
-
-output "subnet_id" {  # Should be plural "subnet_ids"
-  value = aws_subnet.private[*].id  # Returns list
-}
-```
+1. [Count vs For_Each Deep Dive](#count-vs-for_each-deep-dive)
+2. [Modern Terraform Features (1.0+)](#modern-terraform-features-10)
+3. [Version Management](#version-management)
+4. [Refactoring Patterns](#refactoring-patterns)
+5. [Locals for Dependency Management](#locals-for-dependency-management)
 
 ---
 
@@ -240,7 +88,7 @@ resource "aws_subnet" "private" {
 ```hcl
 variable "environments" {
   default = {
-    dev = {
+    test = {
       instance_type = "t3.micro"
       instance_count = 1
     }
@@ -258,7 +106,7 @@ resource "aws_instance" "app" {
   count         = each.value.instance_count
 
   tags = {
-    Environment = each.key  # "dev" or "prod"
+    Environment = each.key  # "test" or "prod"
   }
 }
 ```
@@ -377,33 +225,6 @@ variable "vpc_cidr" {
   type        = string
   nullable    = false  # Passing null uses default, not null
   default     = "10.0.0.0/16"
-}
-```
-
-### optional() with Defaults (Terraform 1.3+)
-
-**Use optional() for object attributes:**
-
-```hcl
-# ✅ GOOD - Using optional() for object attributes
-variable "database_config" {
-  description = "Database configuration with optional parameters"
-  type = object({
-    name               = string
-    engine             = string
-    instance_class     = string
-    backup_retention   = optional(number, 7)      # Default: 7
-    monitoring_enabled = optional(bool, true)     # Default: true
-    tags               = optional(map(string), {}) # Default: {}
-  })
-}
-
-# Usage - only required fields needed
-database_config = {
-  name           = "mydb"
-  engine         = "mysql"
-  instance_class = "db.t3.micro"
-  # Optional fields use defaults
 }
 ```
 
@@ -597,87 +418,7 @@ module "vpc" {
 # Development - allow flexibility
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.1"  # Allow patch updates in dev
-}
-```
-
-### Update Strategy
-
-**Security patches:**
-
-- Update immediately
-- Test in dev → stage → prod
-- Prioritize provider and Terraform core updates
-
-**Minor versions:**
-
-- Regular maintenance windows (monthly/quarterly)
-- Review changelog for breaking changes
-- Test thoroughly before production
-
-**Major versions:**
-
-- Planned upgrade cycles
-- Dedicated testing period
-- May require code changes
-- Update in phases: dev → stage → prod
-
-### Version Management Workflow
-
-```hcl
-# Step 1: Lock versions in versions.tf
-terraform {
-  required_version = "~> 1.9"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-# Step 2: Generate lock file (commit this)
-terraform init
-# Creates .terraform.lock.hcl with exact versions used
-
-# Step 3: Update providers when needed
-terraform init -upgrade
-# Updates to latest within constraints
-
-# Step 4: Review and test changes before committing
-terraform plan
-```
-
-### Example versions.tf Template
-
-```hcl
-terraform {
-  # Terraform version
-  required_version = "~> 1.9"
-
-  # Provider versions
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = "~> 3.2"
-    }
-  }
-
-  # Backend configuration (optional here, often in backend.tf)
-  backend "s3" {
-    bucket = "my-terraform-state"
-    key    = "infrastructure/terraform.tfstate"
-    region = "us-east-1"
-  }
+  version = "~> 5.1"  # Allow patch updates in test
 }
 ```
 

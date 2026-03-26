@@ -1,6 +1,6 @@
 ---
 name: terraform-skill
-description: Use when working with Terraform or OpenTofu - creating modules, writing tests (native test framework, Terratest), setting up CI/CD pipelines, reviewing configurations, choosing between testing approaches, debugging state issues, implementing security scanning (trivy, checkov), or making infrastructure-as-code architecture decisions
+description: Use when working with Terraform or OpenTofu - creating modules, reviewing configurations, or making infrastructure-as-code architecture decisions
 license: Apache-2.0
 ---
 
@@ -45,8 +45,8 @@ Comprehensive Terraform and OpenTofu guidance covering testing, modules, CI/CD, 
 ```
 environments/        # Environment-specific configurations
 ├── prod/
-├── staging/
-└── dev/
+├── stage/
+└── test/
 
 modules/            # Reusable modules
 ├── networking/
@@ -60,7 +60,7 @@ examples/           # Module usage examples (also serve as tests)
 
 **Key principle from terraform-best-practices.com:**
 
-- Separate **environments** (prod, staging) from **modules** (reusable components)
+- Separate **environments** (prod, stage) from **modules** (reusable components)
 - Use **examples/** as both documentation and integration test fixtures
 - Keep modules small and focused (single responsibility)
 
@@ -163,11 +163,11 @@ resource "aws_nat_gateway" "this" {
 variable "environment" {
   description = "Environment name for resource tagging"
   type        = string
-  default     = "dev"
+  default     = "test"
 
   validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be one of: dev, staging, prod."
+    condition     = contains(["test", "stage", "prod"], var.environment)
+    error_message = "Environment must be one of: test, stage, prod."
   }
 
   nullable = false
@@ -366,7 +366,7 @@ version = ">= 5.0"     # Minimum (risky - breaking changes)
 | **Terraform**      | Pin minor version   | `required_version = "~> 1.9"` |
 | **Providers**      | Pin major version   | `version = "~> 5.0"`          |
 | **Modules (prod)** | Pin exact version   | `version = "5.1.2"`           |
-| **Modules (dev)**  | Allow patch updates | `version = "~> 5.1"`          |
+| **Modules (test)** | Allow patch updates | `version = "~> 5.1"`          |
 
 ### Update Workflow
 
